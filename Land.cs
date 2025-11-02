@@ -6,13 +6,19 @@ namespace Terrain {
 	public class Land {
 		public int Length { get; set; }
 		public int Height { get; set; }
+		public int Anchors { get; set; }
 
 		public float[,] Map { get; set; }
 
-		public Land(int length, int height) {
+		public Land(int length, int height, int anchors) {
 			Length = length;
 			Height = height;
+			Anchors = anchors;
 			Map = new float[Length, Height];
+		}
+
+		public int DistanceBetween(int x1, int y1, int x2, int y2) {
+			
 		}
 
 		public void StartMap() {
@@ -24,7 +30,18 @@ namespace Terrain {
 		}
 
 		public void SetAnchorPoints() {
-			
+			Random rand = new Random();
+			int count = 0;
+
+			while (count < Anchors) {
+				int x = rand.Next(0, Length - 1);
+				int y = rand.Next(0, Height - 1);
+
+				if (Map[x,y] != 1) {
+					Map[x,y] = 1;
+					count++;
+				}
+			}		
 		}
 
 		public void PrintDataMap() {
