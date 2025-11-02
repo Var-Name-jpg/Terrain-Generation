@@ -5,7 +5,9 @@ using System.Collections.Generic;
 namespace Terrain {
 	public class Program {
 		public static void Main(string[] args) {
-			Console.WriteLine("Hello World");
+			Land testMap = new Land(10, 10);
+
+			testMap.PrintDataMap();
 		}
 	}
 }
