@@ -99,5 +99,20 @@ namespace Terrain {
 				Console.WriteLine();
 			}
 		}
+
+		/// TODO: Not sure if this works entirely
+		public  SmoothMapLerp(double influence = 0.5, double randomness = 0.1) {
+			for (int i = 0; i < Height; i++) {
+				for (int j = 0; j < Length; j++) {
+					double val = Map[i,j];
+					foreach (var anchor in Anchors) {
+						int ax = anchor.Item1;
+						int ay = anchor.Item2;
+
+
+					}
+				}
+			}
+		}
 	}
 }
