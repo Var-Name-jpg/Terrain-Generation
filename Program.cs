@@ -11,6 +11,7 @@ namespace Terrain {
 			testMap.StartMap();
 			testMap.SetAnchorPoints();
 			testMap.FillMap();
+			testMap.SmoothMapLerp();
 			testMap.PrintDataMap();
 			testMap.PrintVisualMap();
 		}

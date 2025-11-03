@@ -101,16 +101,33 @@ namespace Terrain {
 		}
 
 		/// TODO: Not sure if this works entirely
-		public  SmoothMapLerp(double influence = 0.5, double randomness = 0.1) {
-			for (int i = 0; i < Height; i++) {
-				for (int j = 0; j < Length; j++) {
-					double val = Map[i,j];
+		public void SmoothMapLerp(double influence = 0.5, double randomness = 0.065) {
+			Random random = new Random();
+
+			for (int y = 0; y < Height; y++) {
+				for (int x = 0; x < Length; x++) {
+					double val = Map[y,x];
 					foreach (var anchor in Anchors) {
 						int ax = anchor.Item1;
 						int ay = anchor.Item2;
+						
+						// Euclidean distance
+						double dist = DistanceBetween(x, y, ax, ay);
 
+						// Influence Decay
+						double influenceFactor = influence * Math.Exp(-dist);
 
+						// Lerp towards anchor "0"
+						val = (1 - influenceFactor) * val + influenceFactor * 0;
 					}
+					
+					// Add randomness
+					val += (random.NextDouble() * 2 - 1) * randomness;
+
+					Map[y,x] = Math.Round(val, 3);
+
+					if (Map[y,x] > 1)
+						Map[y,x] = 1;
 				}
 			}
 		}
