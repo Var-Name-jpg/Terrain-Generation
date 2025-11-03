@@ -36,7 +36,8 @@ namespace Terrain {
 			StartMap();
 			SetAnchorPoints();
 			FillMap();
-			SmoothMapLerp();
+			//SmoothMapLerp();
+			SmoothMapIndexing();
 		}
 
 		public void StartMap() {
@@ -171,6 +172,7 @@ namespace Terrain {
 		}
 
 		public void SmoothMapIndexing() {
+			Random random = new Random();
 			Dictionary<string, int> surroundingColors = new Dictionary<string, int> {
 				{ "white", 0 },
 				{ "brown", 0 },
@@ -184,165 +186,266 @@ namespace Terrain {
 					// Get all surrounding Colors
 
 					// Up
-					switch ( CheckTileColor( Map[y-1,x] ) ) {
-						case "white":
-							surroundingColors["white"] += 1;
-							break;
+					if (y - 1 > 0) {
+						switch ( CheckTileColor( Map[y-1,x] ) ) {
+							case "white":
+								surroundingColors["white"] += 1;
+								break;
 
-						case "brown":
-							surroundingColors["brown"] += 1;
-							break;
+							case "brown":
+								surroundingColors["brown"] += 1;
+								break;
 
-						case "green":
-							surroundingColors["green"] += 1;
-							break;
+							case "green":
+								surroundingColors["green"] += 1;
+								break;
 
-						case "yellow":
-							surroundingColors["yellow"] += 1;
-							break;
+							case "yellow":
+								surroundingColors["yellow"] += 1;
+								break;
 
-						case "blue":
-							surroundingColors["blue"] += 1;
-							break;
+							case "blue":
+								surroundingColors["blue"] += 1;
+								break;
 
-						default:
-							Console.Write("X");
-							break;
+							default:
+								Console.Write("X");
+								break;
+						}
 					}
 
-					// Down
-					switch ( CheckTileColor( Map[y+1,x] ) ) {
-						case "white":
-							surroundingColors["white"] += 1;
-							break;
+					if (y + 1 < Height) {
+						// Down
+						switch ( CheckTileColor( Map[y+1,x] ) ) {
+							case "white":
+								surroundingColors["white"] += 1;
+								break;
 
-						case "brown":
-							surroundingColors["brown"] += 1;
-							break;
+							case "brown":
+								surroundingColors["brown"] += 1;
+								break;
 
-						case "green":
-							surroundingColors["green"] += 1;
-							break;
+							case "green":
+								surroundingColors["green"] += 1;
+								break;
 
-						case "yellow":
-							surroundingColors["yellow"] += 1;
-							break;
+							case "yellow":
+								surroundingColors["yellow"] += 1;
+								break;
 
-						case "blue":
-							surroundingColors["blue"] += 1;
-							break;
+							case "blue":
+								surroundingColors["blue"] += 1;
+								break;
 
-						default:
-							Console.Write("X");
-							break;
-					}
-					
-					// Left
-					switch ( CheckTileColor( Map[y,x-1] ) ) {
-						case "white":
-							surroundingColors["white"] += 1;
-							break;
-
-						case "brown":
-							surroundingColors["brown"] += 1;
-							break;
-
-						case "green":
-							surroundingColors["green"] += 1;
-							break;
-
-						case "yellow":
-							surroundingColors["yellow"] += 1;
-							break;
-
-						case "blue":
-							surroundingColors["blue"] += 1;
-							break;
-
-						default:
-							Console.Write("X");
-							break;
+							default:
+								Console.Write("X");
+								break;
+						}
 					}
 					
-					// Right
-					switch ( CheckTileColor( Map[y,x+1] ) ) {
-						case "white":
-							surroundingColors["white"] += 1;
-							break;
+					if (x - 1 > 0) {
+						// Left
+						switch ( CheckTileColor( Map[y,x-1] ) ) {
+							case "white":
+								surroundingColors["white"] += 1;
+								break;
 
-						case "brown":
-							surroundingColors["brown"] += 1;
-							break;
+							case "brown":
+								surroundingColors["brown"] += 1;
+								break;
 
-						case "green":
-							surroundingColors["green"] += 1;
-							break;
+							case "green":
+								surroundingColors["green"] += 1;
+								break;
 
-						case "yellow":
-							surroundingColors["yellow"] += 1;
-							break;
+							case "yellow":
+								surroundingColors["yellow"] += 1;
+								break;
 
-						case "blue":
-							surroundingColors["blue"] += 1;
-							break;
+							case "blue":
+								surroundingColors["blue"] += 1;
+								break;
 
-						default:
-							Console.Write("X");
-							break;
-					}
-
-					// Up Right
-					switch ( CheckTileColor( Map[y-1,x+1] ) ) {
-						case "white":
-							surroundingColors["white"] += 1;
-							break;
-
-						case "brown":
-							surroundingColors["brown"] += 1;
-							break;
-
-						case "green":
-							surroundingColors["green"] += 1;
-							break;
-
-						case "yellow":
-							surroundingColors["yellow"] += 1;
-							break;
-
-						case "blue":
-							surroundingColors["blue"] += 1;
-							break;
-
-						default:
-							Console.Write("X");
-							break;
+							default:
+								Console.Write("X");
+								break;
+						}
 					}
 					
-					// Up Left
-					switch ( CheckTileColor( Map[y-1,x-1] ) ) {
-						case "white":
-							surroundingColors["white"] += 1;
-							break;
+					if (x + 1 < Length) {
+						// Right
+						switch ( CheckTileColor( Map[y,x+1] ) ) {
+							case "white":
+								surroundingColors["white"] += 1;
+								break;
 
-						case "brown":
-							surroundingColors["brown"] += 1;
-							break;
+							case "brown":
+								surroundingColors["brown"] += 1;
+								break;
 
-						case "green":
-							surroundingColors["green"] += 1;
-							break;
+							case "green":
+								surroundingColors["green"] += 1;
+								break;
 
-						case "yellow":
-							surroundingColors["yellow"] += 1;
-							break;
+							case "yellow":
+								surroundingColors["yellow"] += 1;
+								break;
 
-						case "blue":
-							surroundingColors["blue"] += 1;
-							break;
+							case "blue":
+								surroundingColors["blue"] += 1;
+								break;
 
-						default:
-							Console.Write("X");
-							break;
+							default:
+								Console.Write("X");
+								break;
+						}
+					}
+
+					if (y - 1 > 0 && x + 1 < Length) {
+						// Up Right
+						switch ( CheckTileColor( Map[y-1,x+1] ) ) {
+							case "white":
+								surroundingColors["white"] += 1;
+								break;
+
+							case "brown":
+								surroundingColors["brown"] += 1;
+								break;
+
+							case "green":
+								surroundingColors["green"] += 1;
+								break;
+
+							case "yellow":
+								surroundingColors["yellow"] += 1;
+								break;
+
+							case "blue":
+								surroundingColors["blue"] += 1;
+								break;
+
+							default:
+								Console.Write("X");
+								break;
+						}
+					}
+					
+					if (y - 1 > 0 && x - 1 > 0) {
+						// Up Left
+						switch ( CheckTileColor( Map[y-1,x-1] ) ) {
+							case "white":
+								surroundingColors["white"] += 1;
+								break;
+
+							case "brown":
+								surroundingColors["brown"] += 1;
+								break;
+
+							case "green":
+								surroundingColors["green"] += 1;
+								break;
+
+							case "yellow":
+								surroundingColors["yellow"] += 1;
+								break;
+
+							case "blue":
+								surroundingColors["blue"] += 1;
+								break;
+
+							default:
+								Console.Write("X");
+								break;
+						}
+					}
+					
+					if (y + 1 < Height && x + 1 < Length) {
+						// Down Right
+						switch ( CheckTileColor( Map[y+1,x+1] ) ) {
+							case "white":
+								surroundingColors["white"] += 1;
+								break;
+
+							case "brown":
+								surroundingColors["brown"] += 1;
+								break;
+
+							case "green":
+								surroundingColors["green"] += 1;
+								break;
+
+							case "yellow":
+								surroundingColors["yellow"] += 1;
+								break;
+
+							case "blue":
+								surroundingColors["blue"] += 1;
+								break;
+
+							default:
+								Console.Write("X");
+								break;
+						}
+					}
+					
+					if (y + 1 < Height && x - 1 > 0) {
+						// Down Left
+						switch ( CheckTileColor( Map[y+1,x-1] ) ) {
+							case "white":
+								surroundingColors["white"] += 1;
+								break;
+
+							case "brown":
+								surroundingColors["brown"] += 1;
+								break;
+
+							case "green":
+								surroundingColors["green"] += 1;
+								break;
+
+							case "yellow":
+								surroundingColors["yellow"] += 1;
+								break;
+
+							case "blue":
+								surroundingColors["blue"] += 1;
+								break;
+
+							default:
+								Console.Write("X");
+								break;
+						}
+					}
+
+					// Random chance to set current tile to the highest value of surrounding tiles
+					var maxColorKVP = surroundingColors.MaxBy(kvp => kvp.Value);
+
+					if (random.Next(1,4) == 1) {
+						switch (maxColorKVP.Key) {
+							case "white":
+								Map[y,x] = 0.1;
+								break;
+
+							case "brown":
+								Map[y,x] = 0.3;
+								break;
+
+							case "green":
+								Map[y,x] = 0.6;
+								break;
+
+							case "yellow":
+								Map[y,x] = 0.9;
+								break;
+
+							case "blue":
+								Map[y,x] = 1.0;
+								break;
+
+							default:
+								Map[y,x] = Map[y,x];
+								break;
+						}
 					}
 				}
 			}
