@@ -5,10 +5,14 @@ using System.Collections.Generic;
 namespace Terrain {
 	public class Program {
 		public static void Main(string[] args) {
-			Land testMap = new Land(10, 10, 2);
+			Land testMap = new Land(50, 50, 5);
+		
 
+			testMap.StartMap();
 			testMap.SetAnchorPoints();
+			testMap.FillMap();
 			testMap.PrintDataMap();
+			testMap.PrintVisualMap();
 		}
 	}
 }

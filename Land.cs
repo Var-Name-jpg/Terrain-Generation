@@ -6,25 +6,27 @@ namespace Terrain {
 	public class Land {
 		public int Length { get; set; }
 		public int Height { get; set; }
-		public int Anchors { get; set; }
+		public int AnchorCount { get; set; }
 
-		public float[,] Map { get; set; }
+		public double[,] Map { get; set; }
 
-		public Land(int length, int height, int anchors) {
+		public List<Tuple<int, int>> Anchors = new List<Tuple<int, int>>();
+
+		public Land(int length, int height, int anchorCount) {
 			Length = length;
 			Height = height;
-			Anchors = anchors;
-			Map = new float[Length, Height];
+			AnchorCount = anchorCount;
+			Map = new double[Length, Height];
 		}
 
-		public int DistanceBetween(int x1, int y1, int x2, int y2) {
-			return Math.sqrt( Math.Pow((x2 - x1), 2) - Math.Pow((y2 - y1), 2) );
+		public double DistanceBetween(int x1, int y1, int x2, int y2) {
+			return Math.Sqrt( Math.Pow((x2 - x1), 2) - Math.Pow((y2 - y1), 2) );
 		}
 
 		public void StartMap() {
 			for (int i = 0; i < Height; i++) {
 				for (int j = 0; j < Length; j++) {
-					Map[i,j] = 0;
+					Map[i,j] = 1;
 				}
 			}
 		}
@@ -33,30 +35,65 @@ namespace Terrain {
 			Random rand = new Random();
 			int count = 0;
 
-			while (count < Anchors) {
+			while (count < AnchorCount) {
 				int x = rand.Next(0, Length - 1);
 				int y = rand.Next(0, Height - 1);
 
-				if (Map[x,y] != 1) {
-					Map[x,y] = 1;
+				if (Map[x,y] != 0) {
+					Map[x,y] = 0;
+					Anchors.Add( new Tuple<int, int>(x, y) );
 					count++;
 				}
-			}		
+			}
 		}
 
 		public void FillMap() {
-			for (int i = 0; i < 
+			double closestDistance;
+
+			for (int i = 0; i < Height; i++) {
+				for (int j = 0; j < Length; j++) {
+					if (Map[i,j] == 0)
+						continue;
+
+					closestDistance = double.MaxValue;
+
+					foreach (var anchor in Anchors) {
+						double distance = DistanceBetween(i, j, anchor.Item1, anchor.Item2);
+						if ( distance < closestDistance) {
+							closestDistance = distance;
+						}
+					}
+
+					Map[i,j] = Math.Round(closestDistance / 10, 4);
+
+					if (Map[i,j] > 1)
+						Map[i,j] = 1;
+				}
+			}	
 		}
 
 		public void PrintDataMap() {
 			for (int i = 0; i < Height; i++) {
 				for (int j = 0; j < Length; j++) {
-					Console.Write($"|{Map[i,j]}");
+					Console.Write($" |{Map[i,j]}| ");
 				}
 				Console.WriteLine();
 			}
 		}
 
+		public void PrintVisualMap() {
+			for (int i = 0; i < Height; i++) {
+				for (int j = 0; j < Length; j++) {
+					double value = Map[i,j];
 
+					if (0 <= value && value <= 0.2) { Console.Write("⬜"); }
+					else if (0.2 < value && value <= 0.35) { Console.Write("🟫"); }
+					else if (0.35 < value && value <= 0.5) { Console.Write("🟩"); }
+					else if (0.5 < value && value <= 0.65) { Console.Write("🟨"); }
+					else if (0.65 < value) { Console.Write("🟦"); }
+				}
+				Console.WriteLine();
+			}
+		}
 	}
 }
