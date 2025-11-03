@@ -20,7 +20,7 @@ namespace Terrain {
 		}
 
 		public double DistanceBetween(int x1, int y1, int x2, int y2) {
-			return Math.Sqrt( Math.Pow((x2 - x1), 2) - Math.Pow((y2 - y1), 2) );
+			return Math.Sqrt( Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2) );
 		}
 
 		public void StartMap() {
@@ -64,7 +64,7 @@ namespace Terrain {
 						}
 					}
 
-					Map[i,j] = Math.Round(closestDistance / 10, 4);
+					Map[i,j] = Math.Round(closestDistance / 10, 3);
 
 					if (Map[i,j] > 1)
 						Map[i,j] = 1;
@@ -73,12 +73,16 @@ namespace Terrain {
 		}
 
 		public void PrintDataMap() {
+			List<string> retMap = new List<string>();
+
 			for (int i = 0; i < Height; i++) {
 				for (int j = 0; j < Length; j++) {
-					Console.Write($" |{Map[i,j]}| ");
+					retMap.Add($"{Map[i,j]}");
 				}
-				Console.WriteLine();
+				retMap.Add("\n");
 			}
+
+			Console.WriteLine( string.Join(',', retMap) );
 		}
 
 		public void PrintVisualMap() {
@@ -87,10 +91,10 @@ namespace Terrain {
 					double value = Map[i,j];
 
 					if (0 <= value && value <= 0.2) { Console.Write("⬜"); }
-					else if (0.2 < value && value <= 0.35) { Console.Write("🟫"); }
-					else if (0.35 < value && value <= 0.5) { Console.Write("🟩"); }
-					else if (0.5 < value && value <= 0.65) { Console.Write("🟨"); }
-					else if (0.65 < value) { Console.Write("🟦"); }
+					else if (0.2 < value && value <= 0.45) { Console.Write("🟫"); }
+					else if (0.45 < value && value <= 0.85) { Console.Write("🟩"); }
+					else if (0.85 < value && value <= 0.95) { Console.Write("🟨"); }
+					else if (0.95 < value) { Console.Write("🟦"); }
 				}
 				Console.WriteLine();
 			}
