@@ -18,7 +18,7 @@ namespace Terrain {
 		}
 
 		public int DistanceBetween(int x1, int y1, int x2, int y2) {
-			
+			return Math.sqrt( Math.Pow((x2 - x1), 2) - Math.Pow((y2 - y1), 2) );
 		}
 
 		public void StartMap() {
@@ -42,6 +42,10 @@ namespace Terrain {
 					count++;
 				}
 			}		
+		}
+
+		public void FillMap() {
+			for (int i = 0; i < 
 		}
 
 		public void PrintDataMap() {
