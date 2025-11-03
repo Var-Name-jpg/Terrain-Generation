@@ -27,8 +27,8 @@ namespace Terrain {
 			if (0 <= value && value <= 0.2) { return "white";  }
 			else if (0.2 < value && value <= 0.45) { return "brown"; }
 			else if (0.45 < value && value <= 0.85) { return "green"; }
-			else if (0.85 < value && value <= 0.95) { return "yellow"; }
-			else if (0.95 < value) { return "blue"; }
+			else if (0.85 < value && value <= 1.0) { return "yellow"; }
+			else if (1.0 < value) { return "blue"; }
 			else { return "ERROR"; }
 		}
 
@@ -36,14 +36,14 @@ namespace Terrain {
 			StartMap();
 			SetAnchorPoints();
 			FillMap();
-			//SmoothMapLerp();
+			SmoothMapLerp();
 			SmoothMapIndexing();
 		}
 
 		public void StartMap() {
 			for (int i = 0; i < Height; i++) {
 				for (int j = 0; j < Length; j++) {
-					Map[i,j] = 1;
+					Map[i,j] = double.MaxValue;
 				}
 			}
 		}
@@ -82,9 +82,6 @@ namespace Terrain {
 					}
 
 					Map[i,j] = Math.Round(closestDistance / 10, 3);
-
-					if (Map[i,j] > 1)
-						Map[i,j] = 1;
 				}
 			}	
 		}
@@ -162,14 +159,13 @@ namespace Terrain {
 
 					Map[y,x] = Math.Round(val, 3);
 
-					if (Map[y,x] > 1)
-						Map[y,x] = 1;
-
 					if (Map[y,x] < 0)
 						Map[y,x] = 0;
 				}
 			}
 		}
+
+	
 
 		public void SmoothMapIndexing() {
 			Random random = new Random();
@@ -183,6 +179,11 @@ namespace Terrain {
 
 			for (int y = 0; y < Height; y++) {
 				for (int x = 0; x < Length; x++) {
+
+					// reset colorMap
+					foreach (string color in surroundingColors.Keys)
+						surroundingColors[color] = 0;
+
 					// Get all surrounding Colors
 
 					// Up
@@ -420,7 +421,7 @@ namespace Terrain {
 					// Random chance to set current tile to the highest value of surrounding tiles
 					var maxColorKVP = surroundingColors.MaxBy(kvp => kvp.Value);
 
-					if (random.Next(1,4) == 1) {
+					if (random.Next(1,5) == 1 && maxColorKVP.Value >= 6) {
 						switch (maxColorKVP.Key) {
 							case "white":
 								Map[y,x] = 0.1;
@@ -448,6 +449,10 @@ namespace Terrain {
 						}
 					}
 				}
+			}
+
+			public void SmoothMapIsolation() {
+				
 			}
 		}
 	}
