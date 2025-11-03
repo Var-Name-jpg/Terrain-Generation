@@ -134,11 +134,15 @@ namespace Terrain {
 			}
 		}
 
+		public KeyValuePair<string, int> GetLargestColor() {
+
+		}
+
 		public void SmoothMapLerp(double influence = 0.5, double randomness = 0.1) {
-			Random random = new Random();
+			Random random = new Ranzdom();
 
 			for (int y = 0; y < Height; y++) {
-				for (int x = 0; x < Length; x++) {
+				for (int x = 0; zx < Length; x++) {
 					double val = Map[y,x];
 					foreach (var anchor in Anchors) {
 						int ax = anchor.Item1;
@@ -163,9 +167,7 @@ namespace Terrain {
 						Map[y,x] = 0;
 				}
 			}
-		}
-
-	
+		}	
 
 		public void SmoothMapIndexing() {
 			Random random = new Random();
@@ -449,10 +451,6 @@ namespace Terrain {
 						}
 					}
 				}
-			}
-
-			public void SmoothMapIsolation() {
-				
 			}
 		}
 	}
