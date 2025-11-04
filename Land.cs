@@ -27,8 +27,8 @@ namespace Terrain {
 			if (0 <= value && value <= 0.2) { return "white";  }
 			else if (0.2 < value && value <= 0.45) { return "brown"; }
 			else if (0.45 < value && value <= 0.85) { return "green"; }
-			else if (0.85 < value && value <= 1.0) { return "yellow"; }
-			else if (1.0 < value) { return "blue"; }
+			else if (0.85 < value && value <= 1.1) { return "yellow"; }
+			else if (1.1 < value) { return "blue"; }
 			else { return "ERROR"; }
 		}
 
@@ -134,42 +134,8 @@ namespace Terrain {
 			}
 		}
 
+		// TODO: Change to "GetSurroundingColors" and return a Dictionary<string, int>
 		public KeyValuePair<string, int> GetLargestColor() {
-
-		}
-
-		public void SmoothMapLerp(double influence = 0.5, double randomness = 0.1) {
-			Random random = new Ranzdom();
-
-			for (int y = 0; y < Height; y++) {
-				for (int x = 0; zx < Length; x++) {
-					double val = Map[y,x];
-					foreach (var anchor in Anchors) {
-						int ax = anchor.Item1;
-						int ay = anchor.Item2;
-						
-						// Euclidean distance
-						double dist = DistanceBetween(x, y, ax, ay);
-
-						// Influence Decay
-						double influenceFactor = influence * Math.Exp(-dist);
-
-						// Lerp towards anchor "0"
-						val = (1 - influenceFactor) * val + influenceFactor * 0;
-					}
-					
-					// Add randomness
-					val += (random.NextDouble() * 2 - 1) * randomness;
-
-					Map[y,x] = Math.Round(val, 3);
-
-					if (Map[y,x] < 0)
-						Map[y,x] = 0;
-				}
-			}
-		}	
-
-		public void SmoothMapIndexing() {
 			Random random = new Random();
 			Dictionary<string, int> surroundingColors = new Dictionary<string, int> {
 				{ "white", 0 },
@@ -419,11 +385,53 @@ namespace Terrain {
 								break;
 						}
 					}
+				}
+			}
 
-					// Random chance to set current tile to the highest value of surrounding tiles
-					var maxColorKVP = surroundingColors.MaxBy(kvp => kvp.Value);
+			return surroundingColors.MaxBy(kvp => kvp.Value);
+		}
 
-					if (random.Next(1,5) == 1 && maxColorKVP.Value >= 6) {
+		public void SmoothMapLerp(double influence = 0.5, double randomness = 0.1) {
+			Random random = new Random();
+
+			for (int y = 0; y < Height; y++) {
+				for (int x = 0; x < Length; x++) {
+					double val = Map[y,x];
+					foreach (var anchor in Anchors) {
+						int ax = anchor.Item1;
+						int ay = anchor.Item2;
+						
+						// Euclidean distance
+						double dist = DistanceBetween(x, y, ax, ay);
+
+						// Influence Decay
+						double influenceFactor = influence * Math.Exp(-dist);
+
+						// Lerp towards anchor "0"
+						val = (1 - influenceFactor) * val + influenceFactor * 0;
+					}
+					
+					// Add randomness
+					val += (random.NextDouble() * 2 - 1) * randomness;
+
+					Map[y,x] = Math.Round(val, 3);
+
+					if (Map[y,x] < 0)
+						Map[y,x] = 0;
+				}
+			}
+		}	
+
+		public void SmoothMapIndexing() {
+			// Random chance to set current tile to the highest value of surrounding tiles
+			// TODO: Change to Dictionary<string, int>
+			KeyValuePair<string, int> maxColorKVP = GetLargestColor();
+			Random random = new Random();
+
+			for (int y = 0; y < Height; y++) {
+				for (int x = 0; x < Length; x++) {
+					// TODO: Need to get the largest collor here for each tile
+					if (random.Next(1,5) == 1 && maxColorKVP.Value >= 4) {
 						switch (maxColorKVP.Key) {
 							case "white":
 								Map[y,x] = 0.1;
@@ -442,7 +450,7 @@ namespace Terrain {
 								break;
 
 							case "blue":
-								Map[y,x] = 1.0;
+								Map[y,x] = 2;
 								break;
 
 							default:
@@ -453,5 +461,7 @@ namespace Terrain {
 				}
 			}
 		}
+
+		// TODO: Make an adjacency algorithm for ocean-wrapped sand, snow-wrapped mountain
 	}
 }
