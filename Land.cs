@@ -135,7 +135,7 @@ namespace Terrain {
 		}
 
 		// TODO: Change to "GetSurroundingColors" and return a Dictionary<string, int>
-		public KeyValuePair<string, int> GetLargestColor() {
+		public KeyValuePair<string, int> GetLargestColor(int x, int y) {
 			Random random = new Random();
 			Dictionary<string, int> surroundingColors = new Dictionary<string, int> {
 				{ "white", 0 },
