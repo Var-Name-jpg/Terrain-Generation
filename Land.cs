@@ -32,12 +32,14 @@ namespace Terrain {
 			else { return "ERROR"; }
 		}
 
-		public void GenerateMap() {
+		public void GenerateMap(int iterations) {
 			StartMap();
 			SetAnchorPoints();
 			FillMap();
 			SmoothMapLerp();
 			SmoothMapIndexing();
+			for (int i = 0; i < iterations; i++)
+				AdjacencyAlgorithm();
 		}
 
 		public void StartMap() {
@@ -63,6 +65,9 @@ namespace Terrain {
 				}
 			}
 		}
+
+		// TODO: Use Bresenhams line alg to make points between close anchor points also anchor points
+		// make a function that checks every anchor against every other anchor to see if they are close enough
 
 		public void FillMap() {
 			double closestDistance;
@@ -134,7 +139,6 @@ namespace Terrain {
 			}
 		}
 
-		// TODO: Change to "GetSurroundingColors" and return a Dictionary<string, int>
 		public Dictionary<string, int> GetSurroundingColors(int x, int y) {
 			Random random = new Random();
 			Dictionary<string, int> surroundingColors = new Dictionary<string, int> {
@@ -459,5 +463,29 @@ namespace Terrain {
 		}
 
 		// TODO: Make an adjacency algorithm for ocean-wrapped sand, snow-wrapped mountain
+		public void AdjacencyAlgorithm() {
+			
+			Dictionary<string, int> surroundingColors = new Dictionary<string, int>();
+
+			for (int y = 0; y < Height; y++) {
+				for (int x = 0; x < Length; x++) {
+					surroundingColors = GetSurroundingColors(x, y);
+					string tileColor = CheckTileColor(Map[y,x]);
+
+					if ( tileColor == "yellow") {
+					       if ( surroundingColors["blue"] >= 7)
+						       Map[y,x] = 2;
+					       if( surroundingColors["green"] >= 7)
+						       Map[y,x] = .5;
+					}
+
+					if ( tileColor == "blue" && surroundingColors["yellow"] >= 6 )
+						Map[y,x] = 1;
+
+					if ( tileColor == "green" && surroundingColors["blue"] >= 7 )
+						Map[y,x] = 2;
+				}
+			}
+		}
 	}
 }

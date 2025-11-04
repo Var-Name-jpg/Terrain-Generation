@@ -5,9 +5,11 @@ using System.Collections.Generic;
 namespace Terrain {
 	public class Program {
 		public static void Main(string[] args) {
-			Land testMap = new Land(50, 50, 7);
+			int DIMENSIONS = 100;
+			int ANCHORS = DIMENSIONS / 10 * 2;
+			Land testMap = new Land(DIMENSIONS, DIMENSIONS, ANCHORS);
 		
-			testMap.GenerateMap();
+			testMap.GenerateMap(3);
 			testMap.PrintVisualMap();
 		}
 	}
