@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace Terrain {
-	public class Land {
+	public abstract class Land {
 		public int Length { get; set; }
 		public int Height { get; set; }
 		public int AnchorCount { get; set; }
