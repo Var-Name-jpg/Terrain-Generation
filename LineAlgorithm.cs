@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Terrain {
 	public partial class Land {
-		public List<(int, int)> points Bresenhams(int x0, int y0, int x1, int y1) {
+		public List<(int, int)> Bresenhams(int x0, int y0, int x1, int y1) {
 			List<(int, int)> points = new List<(int, int)>();
 
 			int dx = Math.Abs(x1 - x0);
@@ -48,11 +48,11 @@ namespace Terrain {
 
 			return points;
 		}
-	}
 
-	public void Swap(ref int a, ref int b) {
-		int temp = a;
-		a = b;
-		b = temp;
+		public void Swap(ref int a, ref int b) {
+			int temp = a;
+			a = b;
+			b = temp;
+		}
 	}
 }

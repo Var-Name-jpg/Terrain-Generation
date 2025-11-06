@@ -35,6 +35,7 @@ namespace Terrain {
 		public void GenerateMap(int iterations) {
 			StartMap();
 			SetAnchorPoints();
+			MakeMoreAnchors();
 			FillMap();
 			SmoothMapLerp();
 			SmoothMapIndexing();
@@ -68,9 +69,25 @@ namespace Terrain {
 
 		// TODO: Use Bresenhams line alg to make points between close anchor points also anchor points
 		// make a function that checks every anchor against every other anchor to see if they are close enough
-		public void MakeMoreAnchorsLol() {
-			foreach (var anchor in Anchors) {
-				// 
+		public void MakeMoreAnchors() {
+			for (int i = 0; i < Anchors.Count; i++) {
+				for (int j = 0; j < Anchors.Count; j++) {
+					if (j == i) continue;
+
+					List<(int, int)> newAnchors = new List<(int, int)>();
+
+					int x1 = Anchors[i].Item1;
+					int y1 = Anchors[i].Item2;
+
+					int x2 = Anchors[j].Item1;
+					int y2 = Anchors[j].Item2;
+
+					if ( DistanceBetween(x1, y1, x2, y2) <= 6 )
+						newAnchors = Bresenhams(x1, y1, x2, y2);
+
+					foreach (var anchor in newAnchors)
+						Anchors.Add( new Tuple<int, int>(anchor.Item1, anchor.Item2) );
+				}
 			}
 		}
 
