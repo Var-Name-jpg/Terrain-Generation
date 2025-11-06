@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace Terrain {
-	public abstract class Land {
+	public partial class Land {
 		public int Length { get; set; }
 		public int Height { get; set; }
 		public int AnchorCount { get; set; }
@@ -68,6 +68,11 @@ namespace Terrain {
 
 		// TODO: Use Bresenhams line alg to make points between close anchor points also anchor points
 		// make a function that checks every anchor against every other anchor to see if they are close enough
+		public void MakeMoreAnchorsLol() {
+			foreach (var anchor in Anchors) {
+				// 
+			}
+		}
 
 		public void FillMap() {
 			double closestDistance;

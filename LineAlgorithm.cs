@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace Terrain {
-	public abstract class Land {
+	public partial class Land {
 		public List<(int, int)> points Bresenhams(int x0, int y0, int x1, int y1) {
 			List<(int, int)> points = new List<(int, int)>();
 
@@ -22,7 +22,31 @@ namespace Terrain {
 				dy = Math.Abs(y1 - y0);
 			}
 
+			// Always draw left to right
+			if (x0 > x1) {
+				Swap(ref x0, ref x1);
+				Swap(ref y0, ref y1);
+			}
 
+			int error = dx / 2;
+			int yStep = (y0 < y1) ? 1 : -1;
+			int y = y0;
+
+			for (int x = x0; x <= x1; x++) {
+				// plot point, reverse if steep
+				if (steep)
+					points.Add((y, x));
+				else
+					points.Add((x, y));
+
+				error -= dy;
+				if (error < 0) {
+					y += yStep;
+					error += dx;
+				}
+			}
+
+			return points;
 		}
 	}
 
