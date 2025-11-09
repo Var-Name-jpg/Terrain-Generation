@@ -140,38 +140,77 @@ namespace Terrain {
 			Console.WriteLine( string.Join(',', retMap) );
 		}
 
-		public void PrintVisualMap() {
-			for (int i = 0; i < Height; i++) {
-				for (int j = 0; j < Length; j++) {
-					double value = Map[i,j].Value;
-					
-					switch ( CheckTileColor(value) ) {
-						case "white":
-							Console.Write("⬜");
-							break;
+		public void PrintVisualMap(int chunk, int chunkCount) {
+			if (chunkCount == 1) {
+				for (int y = 0; y < Height; y++) {
+					for (int x = 0; x < Length; x++) {
+						double value = Map[y,x].Value;
+						
+						switch ( CheckTileColor(value) ) {
+							case "white":
+								Console.Write("⬜");
+								break;
 
-						case "brown":
-							Console.Write("🟫");
-							break;
+							case "brown":
+								Console.Write("🟫");
+								break;
 
-						case "green":
-							Console.Write("🟩");
-							break;
+							case "green":
+								Console.Write("🟩");
+								break;
 
-						case "yellow":
-							Console.Write("🟨");
-							break;
+							case "yellow":
+								Console.Write("🟨");
+								break;
 
-						case "blue":
-							Console.Write("🟦");
-							break;
+							case "blue":
+								Console.Write("🟦");
+								break;
 
-						default:
-							Console.Write("X");
-							break;
+							default:
+								Console.Write("X");
+								break;
+						}
 					}
+					Console.WriteLine();
 				}
-				Console.WriteLine();
+
+				return;
+			} else {
+				for (int y = (chunk * 50) - 50; y < chunk * 50; y++) {
+					for (int x = (chunk * 50) - 50; x < chunk * 50; x++ ) {
+						double value = Map[y,x].Value;
+						
+						switch ( CheckTileColor(value) ) {
+							case "white":
+								Console.Write("⬜");
+								break;
+
+							case "brown":
+								Console.Write("🟫");
+								break;
+
+							case "green":
+								Console.Write("🟩");
+								break;
+
+							case "yellow":
+								Console.Write("🟨");
+								break;
+
+							case "blue":
+								Console.Write("🟦");
+								break;
+
+							default:
+								Console.Write("X");
+								break;
+						}
+					}
+					Console.WriteLine();
+				}
+
+				return;
 			}
 		}
 
