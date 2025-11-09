@@ -9,7 +9,7 @@ namespace Terrain {
 			int ANCHORS = DIMENSIONS / 10 * 2;
 			Land testMap = new Land(DIMENSIONS, DIMENSIONS, ANCHORS);
 		
-			testMap.GenerateMap(3);
+			testMap.GenerateMap(100);
 			testMap.PrintVisualMap();
 		}
 	}

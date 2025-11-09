@@ -8,15 +8,25 @@ namespace Terrain {
 		public int Height { get; set; }
 		public int AnchorCount { get; set; }
 
-		public double[,] Map { get; set; }
+		public Point[,] Map;
 
-		public List<Tuple<int, int>> Anchors = new List<Tuple<int, int>>();
+		
+
+		public List<Point> Anchors = new List<Point>();
 
 		public Land(int length, int height, int anchorCount) {
 			Length = length;
 			Height = height;
 			AnchorCount = anchorCount;
-			Map = new double[Length, Height];
+			
+			Map = new Point[Length, Height];
+
+			for (int y = 0; y < Height; y++) {
+				for (int x = 0; x < Length; x++) {
+					Map[y,x] = new Point(x, y);
+				}
+			}
+			
 		}
 
 		public double DistanceBetween(int x1, int y1, int x2, int y2) {
@@ -33,22 +43,13 @@ namespace Terrain {
 		}
 
 		public void GenerateMap(int iterations) {
-			StartMap();
 			SetAnchorPoints();
-			MakeMoreAnchors();
+			BresenhamsAnchorPoints();
 			FillMap();
 			SmoothMapLerp();
 			SmoothMapIndexing();
 			for (int i = 0; i < iterations; i++)
 				AdjacencyAlgorithm();
-		}
-
-		public void StartMap() {
-			for (int i = 0; i < Height; i++) {
-				for (int j = 0; j < Length; j++) {
-					Map[i,j] = double.MaxValue;
-				}
-			}
 		}
 
 		public void SetAnchorPoints() {
@@ -59,64 +60,69 @@ namespace Terrain {
 				int x = rand.Next(0, Length - 1);
 				int y = rand.Next(0, Height - 1);
 
-				if (Map[x,y] != 0) {
-					Map[x,y] = 0;
-					Anchors.Add( new Tuple<int, int>(x, y) );
+				if (Map[x,y].Value != 0) {
+					Map[x,y].Value = 0;
+					Anchors.Add( Map[x,y] );
 					count++;
 				}
 			}
 		}
 
-		// TODO: Use Bresenhams line alg to make points between close anchor points also anchor points
-		// make a function that checks every anchor against every other anchor to see if they are close enough
-		public void MakeMoreAnchors() {
-			List<(int, int)> newAnchors = new List<(int, int)>();
-
-			int x1, y1;
-			int x2, y2;
+		public void BresenhamsAnchorPoints() {
+			List<Point> pointsToAdd = new List<Point>();
 
 			for (int i = 0; i < Anchors.Count; i++) {
 				for (int j = 0; j < Anchors.Count; j++) {
-					if (j == i) continue;
+					if (j == i)
+						continue;
 
-					newAnchors.Clear();
+					List<Point> tempPoints = new List<Point>();
 
-					x1 = Anchors[i].Item1;
-					y1 = Anchors[i].Item2;
+					int x = Anchors[i].X;
+					int y = Anchors[i].Y;
 
-					x2 = Anchors[j].Item1;
-					y2 = Anchors[j].Item2;
+					int x1 = Anchors[j].X;
+					int y1 = Anchors[j].Y;
 
-					if ( DistanceBetween(x1, y1, x2, y2) <= 6 )
-						newAnchors = Bresenhams(x1, y1, x2, y2);
-					Console.WriteLine(string.Join(',', newAnchors));
+					if ( DistanceBetween(x, y, x1, y1) <= 20 ) {
 
-					foreach (var anchor in newAnchors) {
-						Map[ anchor.Item2, anchor.Item1 ] = 0;
-						Anchors.Add( new Tuple<int, int>(anchor.Item1, anchor.Item2) );
+						tempPoints = Bresenhams(x, y, x1, y1);
+						foreach (Point point in tempPoints) {
+							if (!pointsToAdd.Contains(point)) {
+								pointsToAdd.Add(point);
+							}
+						}
 					}
-				}
+				}	
+			}
+
+			foreach (Point point in pointsToAdd) {
+				if (Map[point.Y, point.X].Value != 0)
+					Map[point.Y, point.X].Value = 0;
+
+				if (!Anchors.Contains(point))
+					Anchors.Add(point);
 			}
 		}
 
 		public void FillMap() {
 			double closestDistance;
 
-			for (int i = 0; i < Height; i++) {
-				for (int j = 0; j < Length; j++) {
-					if (Map[i,j] == 0)
+			for (int y = 0; y < Height; y++) {
+				for (int x = 0; x < Length; x++) {
+					if (Map[y,x].Value == 0)
 						continue;
 
 					closestDistance = double.MaxValue;
 
 					foreach (var anchor in Anchors) {
-						double distance = DistanceBetween(i, j, anchor.Item1, anchor.Item2);
+						double distance = DistanceBetween(x, y, anchor.X, anchor.Y);
 						if ( distance < closestDistance) {
 							closestDistance = distance;
 						}
 					}
 
-					Map[i,j] = Math.Round(closestDistance / 10, 3);
+					Map[y,x].Value = Math.Round(closestDistance / 10, 3);
 				}
 			}	
 		}
@@ -126,7 +132,7 @@ namespace Terrain {
 
 			for (int i = 0; i < Height; i++) {
 				for (int j = 0; j < Length; j++) {
-					retMap.Add($"{Map[i,j]}");
+					retMap.Add($"{Map[i,j].Value}");
 				}
 				retMap.Add("\n");
 			}
@@ -137,7 +143,7 @@ namespace Terrain {
 		public void PrintVisualMap() {
 			for (int i = 0; i < Height; i++) {
 				for (int j = 0; j < Length; j++) {
-					double value = Map[i,j];
+					double value = Map[i,j].Value;
 					
 					switch ( CheckTileColor(value) ) {
 						case "white":
@@ -170,7 +176,7 @@ namespace Terrain {
 		}
 
 		public Dictionary<string, int> GetSurroundingColors(int x, int y) {
-			Random random = new Random();
+			Random random = new Random(1);
 			Dictionary<string, int> surroundingColors = new Dictionary<string, int> {
 				{ "white", 0 },
 				{ "brown", 0 },
@@ -187,7 +193,7 @@ namespace Terrain {
 
 			// Up
 			if (y - 1 > 0) {
-				switch ( CheckTileColor( Map[y-1,x] ) ) {
+				switch ( CheckTileColor( Map[y-1,x].Value ) ) {
 					case "white":
 						surroundingColors["white"] += 1;
 						break;
@@ -216,7 +222,7 @@ namespace Terrain {
 
 			if (y + 1 < Height) {
 				// Down
-				switch ( CheckTileColor( Map[y+1,x] ) ) {
+				switch ( CheckTileColor( Map[y+1,x].Value ) ) {
 					case "white":
 						surroundingColors["white"] += 1;
 						break;
@@ -245,7 +251,7 @@ namespace Terrain {
 			
 			if (x - 1 > 0) {
 				// Left
-				switch ( CheckTileColor( Map[y,x-1] ) ) {
+				switch ( CheckTileColor( Map[y,x-1].Value ) ) {
 					case "white":
 						surroundingColors["white"] += 1;
 						break;
@@ -274,7 +280,7 @@ namespace Terrain {
 			
 			if (x + 1 < Length) {
 				// Right
-				switch ( CheckTileColor( Map[y,x+1] ) ) {
+				switch ( CheckTileColor( Map[y,x+1].Value ) ) {
 					case "white":
 						surroundingColors["white"] += 1;
 						break;
@@ -303,7 +309,7 @@ namespace Terrain {
 
 			if (y - 1 > 0 && x + 1 < Length) {
 				// Up Right
-				switch ( CheckTileColor( Map[y-1,x+1] ) ) {
+				switch ( CheckTileColor( Map[y-1,x+1].Value ) ) {
 					case "white":
 						surroundingColors["white"] += 1;
 						break;
@@ -332,7 +338,7 @@ namespace Terrain {
 			
 			if (y - 1 > 0 && x - 1 > 0) {
 				// Up Left
-				switch ( CheckTileColor( Map[y-1,x-1] ) ) {
+				switch ( CheckTileColor( Map[y-1,x-1].Value ) ) {
 					case "white":
 						surroundingColors["white"] += 1;
 						break;
@@ -361,7 +367,7 @@ namespace Terrain {
 			
 			if (y + 1 < Height && x + 1 < Length) {
 				// Down Right
-				switch ( CheckTileColor( Map[y+1,x+1] ) ) {
+				switch ( CheckTileColor( Map[y+1,x+1].Value ) ) {
 					case "white":
 						surroundingColors["white"] += 1;
 						break;
@@ -390,7 +396,7 @@ namespace Terrain {
 			
 			if (y + 1 < Height && x - 1 > 0) {
 				// Down Left
-				switch ( CheckTileColor( Map[y+1,x-1] ) ) {
+				switch ( CheckTileColor( Map[y+1,x-1].Value ) ) {
 					case "white":
 						surroundingColors["white"] += 1;
 						break;
@@ -420,15 +426,15 @@ namespace Terrain {
 			return surroundingColors;
 		}
 
-		public void SmoothMapLerp(double influence = 0.5, double randomness = 0.1) {
+		public void SmoothMapLerp(double influence = 0.5, double randomness = 0.13) {
 			Random random = new Random();
 
 			for (int y = 0; y < Height; y++) {
 				for (int x = 0; x < Length; x++) {
-					double val = Map[y,x];
+					double val = Map[y,x].Value;
 					foreach (var anchor in Anchors) {
-						int ax = anchor.Item1;
-						int ay = anchor.Item2;
+						int ax = anchor.X;
+						int ay = anchor.Y;
 						
 						// Euclidean distance
 						double dist = DistanceBetween(x, y, ax, ay);
@@ -443,10 +449,10 @@ namespace Terrain {
 					// Add randomness
 					val += (random.NextDouble() * 2 - 1) * randomness;
 
-					Map[y,x] = Math.Round(val, 3);
+					Map[y,x].Value = Math.Round(val, 3);
 
-					if (Map[y,x] < 0)
-						Map[y,x] = 0;
+					if (Map[y,x].Value < 0)
+						Map[y,x].Value = 0.1;
 				}
 			}
 		}	
@@ -464,27 +470,27 @@ namespace Terrain {
 					if (random.Next(1,5) == 1 && maxColorKVP.Value >= 4) {
 						switch (maxColorKVP.Key) {
 							case "white":
-								Map[y,x] = 0.1;
+								Map[y,x].Value = 0.1;
 								break;
 
 							case "brown":
-								Map[y,x] = 0.3;
+								Map[y,x].Value = 0.3;
 								break;
 
 							case "green":
-								Map[y,x] = 0.6;
+								Map[y,x].Value = 0.6;
 								break;
 
 							case "yellow":
-								Map[y,x] = 0.9;
+								Map[y,x].Value = 0.9;
 								break;
 
 							case "blue":
-								Map[y,x] = 2;
+								Map[y,x].Value = 2;
 								break;
 
 							default:
-								Map[y,x] = Map[y,x];
+								Map[y,x].Value = Map[y,x].Value;
 								break;
 						}
 					}
@@ -500,20 +506,47 @@ namespace Terrain {
 			for (int y = 0; y < Height; y++) {
 				for (int x = 0; x < Length; x++) {
 					surroundingColors = GetSurroundingColors(x, y);
-					string tileColor = CheckTileColor(Map[y,x]);
+					string tileColor = CheckTileColor(Map[y,x].Value);
 
-					if ( tileColor == "yellow") {
-					       if ( surroundingColors["blue"] >= 7)
-						       Map[y,x] = 2;
-					       if( surroundingColors["green"] >= 7)
-						       Map[y,x] = .5;
+					switch ( tileColor ) {
+						case "white":
+							if ( surroundingColors["green"] > 1 )
+								Map[y,x].Value = 0.3;
+
+							break;
+
+						case "brown":
+
+							break;
+
+						case "green":
+							if ( surroundingColors["blue"] >= 7 )
+								Map[y,x].Value = 2;
+
+							if ( surroundingColors["yellow"] > 1 && surroundingColors["blue"] > 1 )
+								Map[y,x].Value = 0.5;
+
+							break;
+
+						case "yellow":
+							if ( surroundingColors["blue"] >= 7 )
+						       		Map[y,x].Value = 2;
+					       		if ( surroundingColors["green"] >= 6 )
+						       		Map[y,x].Value = .5;
+
+							break;
+
+						case "blue":
+							if ( surroundingColors["yellow"] >= 6 )
+								Map[y,x].Value = 1;
+
+							break;
+
+						default:
+							throw new Exception("This should never be thrown.... You've got some big problems...");
+
+
 					}
-
-					if ( tileColor == "blue" && surroundingColors["yellow"] >= 6 )
-						Map[y,x] = 1;
-
-					if ( tileColor == "green" && surroundingColors["blue"] >= 7 )
-						Map[y,x] = 2;
 				}
 			}
 		}

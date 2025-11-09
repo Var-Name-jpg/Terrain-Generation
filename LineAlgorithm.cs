@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 namespace Terrain {
 	public partial class Land {
-		public List<(int, int)> Bresenhams(int x0, int y0, int x1, int y1) {
-			List<(int, int)> points = new List<(int, int)>();
+		public List<Point> Bresenhams(int x0, int y0, int x1, int y1) {
+			List<Point> points = new List<Point>();
 
 			int dx = Math.Abs(x1 - x0);
 			int dy = Math.Abs(y1 - y0);
@@ -35,9 +35,9 @@ namespace Terrain {
 			for (int x = x0; x <= x1; x++) {
 				// plot point, reverse if steep
 				if (steep)
-					points.Add((y, x));
+					points.Add(new Point(y, x));
 				else
-					points.Add((x, y));
+					points.Add(new Point(x, y));
 
 				error -= dy;
 				if (error < 0) {
