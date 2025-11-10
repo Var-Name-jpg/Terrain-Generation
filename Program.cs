@@ -36,13 +36,13 @@ namespace Terrain {
 		
 			testMap.GenerateMap(100);
 
-			int chunk = 1;
+			int chunk = 4;
 
 			while (true) {
 				Console.Clear();
 
 				testMap.PrintVisualMap(chunk, chunkCount);
-				string interactionInput = Console.ReadLine();
+				string interactionInput = Console.ReadLine().ToLower();
 
 				switch (interactionInput) {
 					case "d":
@@ -51,6 +51,15 @@ namespace Terrain {
 						break;
 					case "a":
 						if (chunkCount != 1 && ((chunk * 50) - 50) > 0) { chunk--; }
+						else { Console.WriteLine("Cannot Move That Way!"); }
+						break;
+
+					case "w":
+						if (chunkCount != 1 && ((chunk * 50) - 50) > 0) { chunk -= (int)Math.Sqrt(chunkCount); }
+						else { Console.WriteLine("Cannot Move That Way!"); }
+						break;
+					case "s":
+						if (chunkCount != 1 && (chunk * 50) < testMap.Height) { chunk += (int)Math.Sqrt(chunkCount); }
 						else { Console.WriteLine("Cannot Move That Way!"); }
 						break;
 				}

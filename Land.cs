@@ -178,7 +178,13 @@ namespace Terrain {
 				return;
 			} else {
 				for (int y = (chunk * 50) - 50; y < chunk * 50; y++) {
-					for (int x = (chunk * 50) - 50; x < chunk * 50; x++ ) {
+					
+					int tempChunk = chunk % (Length/50);
+					if (tempChunk % (Length/50) == 0) {
+						tempChunk = Length/50;
+					}
+
+					for (int x = (tempChunk * 50) - 50; x < tempChunk * 50; x++ ) {
 						double value = Map[y,x].Value;
 						
 						switch ( CheckTileColor(value) ) {
