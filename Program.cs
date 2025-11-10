@@ -36,7 +36,7 @@ namespace Terrain {
 		
 			testMap.GenerateMap(100);
 
-			int chunk = 4;
+			int chunk = 1;
 
 			while (true) {
 				Console.Clear();
