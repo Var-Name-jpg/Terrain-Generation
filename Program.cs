@@ -35,31 +35,38 @@ namespace Terrain {
 			Land testMap = new Land(DIMENSIONS, DIMENSIONS, ANCHORS);
 		
 			testMap.GenerateMap(100);
-
+		
 			int chunk = 1;
 
 			while (true) {
 				Console.Clear();
+				Console.WriteLine(chunk);
 
 				testMap.PrintVisualMap(chunk, chunkCount);
 				string interactionInput = Console.ReadLine().ToLower();
 
+				int xChunk = chunk % (testMap.Length / 50);
+				if (xChunk == 0) { xChunk = testMap.Length / 50; }
+
+				int yChunk = (int)Math.Ceiling( (double)chunk / (testMap.Length / 50));
+
 				switch (interactionInput) {
 					case "d":
-						if (chunkCount != 1 && (chunk * 50) < testMap.Length) { chunk++; }
+						if (chunkCount != 1 && (xChunk * 50) < testMap.Length) { chunk++; }
 						else { Console.WriteLine("Cannot Move That Way!"); }
 						break;
 					case "a":
-						if (chunkCount != 1 && ((chunk * 50) - 50) > 0) { chunk--; }
+						if (chunkCount != 1 && ((xChunk * 50) - 50) > 0) { chunk--; }
 						else { Console.WriteLine("Cannot Move That Way!"); }
 						break;
 
 					case "w":
-						if (chunkCount != 1 && ((chunk * 50) - 50) > 0) { chunk -= (int)Math.Sqrt(chunkCount); }
+						if (chunkCount != 1 && ((yChunk * 50) - 50) > 0) { chunk -= testMap.Height / 50; }
 						else { Console.WriteLine("Cannot Move That Way!"); }
 						break;
+
 					case "s":
-						if (chunkCount != 1 && (chunk * 50) < testMap.Height) { chunk += (int)Math.Sqrt(chunkCount); }
+						if (chunkCount != 1 && (yChunk * 50) < testMap.Height) { chunk += testMap.Height / 50; }
 						else { Console.WriteLine("Cannot Move That Way!"); }
 						break;
 				}
